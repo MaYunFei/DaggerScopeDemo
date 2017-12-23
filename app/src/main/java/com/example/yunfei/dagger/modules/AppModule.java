@@ -21,11 +21,13 @@ public class AppModule {
         this.context = context;
     }
 
+    @Singleton
     @Provides
     public Context provideContext(){
         return context;
     }
 
+    @Singleton
     @Provides
     public GlobalVariable provideGlobalVariable(){
         return new GlobalVariable();

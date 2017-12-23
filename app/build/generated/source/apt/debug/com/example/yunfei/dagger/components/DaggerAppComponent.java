@@ -4,10 +4,16 @@ package com.example.yunfei.dagger.components;
 import android.content.Context;
 import com.example.yunfei.GlobalVariable;
 import com.example.yunfei.dagger.modules.AppModule;
+import com.example.yunfei.dagger.modules.AppModule_ProvideContextFactory;
+import com.example.yunfei.dagger.modules.AppModule_ProvideGlobalVariableFactory;
+import dagger.internal.DoubleCheck;
 import dagger.internal.Preconditions;
+import javax.inject.Provider;
 
 public final class DaggerAppComponent implements AppComponent {
-  private AppModule appModule;
+  private Provider<Context> provideContextProvider;
+
+  private Provider<GlobalVariable> provideGlobalVariableProvider;
 
   private DaggerAppComponent(Builder builder) {
     initialize(builder);
@@ -19,20 +25,20 @@ public final class DaggerAppComponent implements AppComponent {
 
   @SuppressWarnings("unchecked")
   private void initialize(final Builder builder) {
-    this.appModule = builder.appModule;
+    this.provideContextProvider =
+        DoubleCheck.provider(AppModule_ProvideContextFactory.create(builder.appModule));
+    this.provideGlobalVariableProvider =
+        DoubleCheck.provider(AppModule_ProvideGlobalVariableFactory.create(builder.appModule));
   }
 
   @Override
   public Context getContext() {
-    return Preconditions.checkNotNull(
-        appModule.provideContext(), "Cannot return null from a non-@Nullable @Provides method");
+    return provideContextProvider.get();
   }
 
   @Override
   public GlobalVariable getGlobalVariable() {
-    return Preconditions.checkNotNull(
-        appModule.provideGlobalVariable(),
-        "Cannot return null from a non-@Nullable @Provides method");
+    return provideGlobalVariableProvider.get();
   }
 
   public static final class Builder {
