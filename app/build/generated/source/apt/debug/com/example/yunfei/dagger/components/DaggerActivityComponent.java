@@ -2,7 +2,10 @@
 package com.example.yunfei.dagger.components;
 
 import com.example.yunfei.mvp.BaseMvpActivity_MembersInjector;
+import com.example.yunfei.mvpdemo.MainActivity;
+import com.example.yunfei.mvpdemo.MainActivity_MembersInjector;
 import com.example.yunfei.mvpdemo.login.LoginActivity;
+import com.example.yunfei.mvpdemo.login.LoginActivity_MembersInjector;
 import com.example.yunfei.mvpdemo.login.LoginPresenter;
 import dagger.internal.Preconditions;
 
@@ -34,8 +37,27 @@ public final class DaggerActivityComponent implements ActivityComponent {
     injectLoginActivity(activity);
   }
 
+  @Override
+  public void inject(MainActivity activity) {
+    injectMainActivity(activity);
+  }
+
   private LoginActivity injectLoginActivity(LoginActivity instance) {
     BaseMvpActivity_MembersInjector.injectMPresenter(instance, getLoginPresenter());
+    LoginActivity_MembersInjector.injectGlobalVariable(
+        instance,
+        Preconditions.checkNotNull(
+            appComponent.getGlobalVariable(),
+            "Cannot return null from a non-@Nullable component method"));
+    return instance;
+  }
+
+  private MainActivity injectMainActivity(MainActivity instance) {
+    MainActivity_MembersInjector.injectGlobalVariable(
+        instance,
+        Preconditions.checkNotNull(
+            appComponent.getGlobalVariable(),
+            "Cannot return null from a non-@Nullable component method"));
     return instance;
   }
 
